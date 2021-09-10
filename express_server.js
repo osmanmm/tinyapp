@@ -43,15 +43,18 @@ res.redirect("/urls");
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
-  console.log(shortURL , urlDatabase);
   res.redirect("/urls");
 });
 app.get("/u/:shortURL", (req, res) => {
    const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
-
-
+app.post("/urls/:shortURL", (req, res) => {
+    const shortURL = req.params.shortURL;
+    urlDatabase[shortURL] = req.body.newURL;
+    //res.redirect(`/urls/${shortURL}`);
+    res.redirect('/urls');
+  });
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
