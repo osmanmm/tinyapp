@@ -25,8 +25,8 @@ app.get("/hello", (req, res) => {
 });
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase,
-    username: req.cookies["username"]
-   };
+    username: req.cookies["username"],
+    };
   
   res.render("urls_index", templateVars);
 });
@@ -69,6 +69,22 @@ app.post("/urls/:shortURL", (req, res) => {
   app.post("/logout", (req, res) => {
     res.clearCookie("username");
     res.redirect("/urls");
+  });
+  app.post("/register", (req, res) => {
+    const { email, password } = req.body;
+      let templateVars = {
+        status: 401,
+        message: 'Email and/or password missing',
+      }
+      res.status(401);
+    res.render("urls_error", templateVars);
+    ('Email and/or password missing');
+  });
+  app.get("/register", (req,res) => {
+    let templateVars = {
+      username: req.body["username"]
+    };
+      res.render("urls_register", templateVars);
   });
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
