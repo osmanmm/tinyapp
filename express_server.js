@@ -12,6 +12,18 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.get("/", (req, res) => {
@@ -25,7 +37,7 @@ app.get("/hello", (req, res) => {
 });
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase,
-    username: req.cookies["username"],
+    user: users[req.cookies.user_id],
     };
   
   res.render("urls_index", templateVars);
@@ -63,26 +75,29 @@ app.post("/urls/:shortURL", (req, res) => {
   });
   app.post("/login", (req, res) => {
     const username = req.body.username;
-    res.cookie("username" , username);
+    res.cookie("username" , users[id]);
     res.redirect("/urls");
   });  
   app.post("/logout", (req, res) => {
-    res.clearCookie("username");
+    res.clearCookie("user_id");
     res.redirect("/urls");
   });
   app.post("/register", (req, res) => {
     const { email, password } = req.body;
-      let templateVars = {
-        status: 401,
-        message: 'Email and/or password missing',
-      }
-      res.status(401);
-    res.render("urls_error", templateVars);
-    ('Email and/or password missing');
+    const newUserID = generateRandomString();
+    users[newUserID] = {
+      id: newUserID,
+      email: email,
+      password: password
+      
+    };
+    console.log(users)
+    res.cookie("user_id" , newUserID);
+    res.redirect('/urls') 
   });
   app.get("/register", (req,res) => {
     let templateVars = {
-      username: req.body["username"]
+      user: users[req.cookies["user_id"]]
     };
       res.render("urls_register", templateVars);
   });
