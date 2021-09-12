@@ -75,10 +75,21 @@ app.post("/urls/:shortURL", (req, res) => {
     res.redirect('/urls');
   });
   app.post("/login", (req, res) => {
-    const username = req.body.username;
-    res.cookie("username" , users[id]);
-    res.redirect("/urls");
-  });  
+    const email = req.body.email;
+  const password = req.body.password;
+
+  if (!emailHasUser(email, users)) {
+    res.status(403).send("There is no account associated with this email address");
+  } else {
+    const userID = userIdFromEmail(email, users);
+    if (!bcrypt.compareSync(password, users[userID].password)) {
+      res.status(403).send("The password you entered does not match the one associated with the provided email address");
+    } else {
+      req.body.user_id = userID;
+      res.redirect("/urls");
+    }
+  }
+});  
   app.post("/logout", (req, res) => {
     res.clearCookie("user_id");
     res.redirect("/urls");
@@ -108,6 +119,16 @@ app.post("/urls/:shortURL", (req, res) => {
       user: users[req.cookies["user_id"]]
     };
       res.render("urls_register", templateVars);
+  });
+  app.get("/login", (req, res) => {
+    if (cookieHasUser(req.body.user_id, users)) {
+      res.redirect("/urls");
+    } else {
+      let templateVars = {
+        user: users[req.body.user_id],
+      };
+      res.render("urls_login", templateVars);
+    }
   });
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
