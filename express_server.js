@@ -4,10 +4,11 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const app = express();
 const PORT = 8080; // default port 8080
+const { generateRandomString, emailHasUser, userIdFromEmail, urlsForUser, cookieHasUser } = require("./helpers");
 app.set("view engine", "ejs");
-function generateRandomString() {
-return Math.random().toString(36).substr(2 , 6);
-}
+// function generateRandomString() {
+// return Math.random().toString(36).substr(2 , 6);
+// }
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
@@ -83,18 +84,25 @@ app.post("/urls/:shortURL", (req, res) => {
     res.redirect("/urls");
   });
   app.post("/register", (req, res) => {
-    const { email, password } = req.body;
+    const submittedEmail = req.body.email;
+  const submittedPassword = req.body.password;
+
+  if (!submittedEmail || !submittedPassword) {
+    res.status(400).send("Please include both a valid email and password");
+  } else if (emailHasUser(submittedEmail, users)) {
+    res.status(400).send("An account already exists for this email address");
+  } else {
     const newUserID = generateRandomString();
     users[newUserID] = {
       id: newUserID,
-      email: email,
-      password: password
-      
+      email: submittedEmail,
+     
     };
-    console.log(users)
     res.cookie("user_id" , newUserID);
     res.redirect('/urls') 
-  });
+  }
+});
+    
   app.get("/register", (req,res) => {
     let templateVars = {
       user: users[req.cookies["user_id"]]
