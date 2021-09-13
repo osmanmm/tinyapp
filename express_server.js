@@ -5,7 +5,6 @@ const bcrypt = require("bcrypt");
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
-//const { render } = require("ejs");
 const {
   getUserByEmail,
   generateRandomString,
