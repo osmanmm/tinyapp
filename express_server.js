@@ -118,7 +118,6 @@ app.get("/urls", (req, res) => {
 
   res.render("urls_index", templateVars);
   console.log(urlDatabase);
-  console.log(urlDatabase);
 });
 
 //create a shortURL
