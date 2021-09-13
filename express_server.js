@@ -63,7 +63,7 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
-//////////////////////////////////////////   /login URL  //////////////////////////////////////////
+//login
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -89,19 +89,18 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
-//////////////////////////////////////////   /logout URL  //////////////////////////////////////////
+//logout and clear the session
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/login");
 });
 
-//////////////////////////////////////////   /urls URL  //////////////////////////////////////////
 app.post("/urls", (req, res) => {
   const randomString = generateRandomString();
   const userID = req.session.username;
 
   if (!req.session.username) {
-    return res.status(400).send("You are not logged in!");
+    return res.status(400).send("<h3>You are not logged in!</h3>");
   }
 
   urlDatabase[randomString] = { longURL: req.body.longURL, userID };
@@ -115,7 +114,7 @@ app.get("/urls", (req, res) => {
   };
 
   if (!req.session.username) {
-    return res.status(400).send("You are not logged in!");
+    return res.status(400).send("<h3>You are not logged in!</h3>");
   }
 
   res.render("urls_index", templateVars);
