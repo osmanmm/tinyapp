@@ -1,57 +1,31 @@
-/* Generates a random string, used for creating short URLs and userIDs */
-const generateRandomString = function() {
-    let randomString = "";
-    for (let i = 0; i < 6; i++) {
-      const randomCharCode = Math.floor(Math.random() * 26 + 97);
-      const randomChar = String.fromCharCode(randomCharCode);
-      randomString += randomChar;
+const getUserByEmail = (email, userDatabase) => {
+  for (const user in userDatabase) {
+    if (userDatabase[user].email === email) {
+      return userDatabase[user];
     }
-    return randomString;
-  };
-  
-  /* Checks if given email corresponds to a user in a given database, returns true or false */
-  const emailHasUser = function(email, userDatabase) {
-    for (const user in userDatabase) {
-      if (userDatabase[user].email === email) {
-        return true;
-      }
+  }
+  return null;
+};
+
+const generateRandomString = () => {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
+  let randomString = "";
+  let i = 0;
+  while (i < 6) {
+    randomString += alphabet[Math.floor(Math.random() * alphabet.length)];
+    i++;
+  }
+  return randomString;
+};
+
+const getUrlsForUser = (id, urlDatabase) => {
+  const userUrls = {};
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      userUrls[url] = urlDatabase[url];
     }
-    return false;
-  };
-  
-  /* Takes an email and userDatabase and returns the user ID for the user with the given email address */
-  const userIdFromEmail = function(email, userDatabase) {
-    for (const user in userDatabase) {
-      if (userDatabase[user].email === email) {
-        return userDatabase[user].id;
-      }
-    }
-  };
-  
-  /* Returns an object of short URLs specific to the passed in userID */
-  const urlsForUser = function(id, urlDatabase) {
-    const userUrls = {};
-    for (const shortURL in urlDatabase) {
-      if (urlDatabase[shortURL].userID === id) {
-        userUrls[shortURL] = urlDatabase[shortURL];
-      }
-    }
-    return userUrls;
-  };
-  
-  /* Checks if current cookie corresponds with a user in the userDatabase */
-  const cookieHasUser = function(cookie, userDatabase) {
-    for (const user in userDatabase) {
-      if (cookie === user) {
-        return true;
-      }
-    } return false;
-  };
-  
-  module.exports = {
-    generateRandomString,
-    emailHasUser,
-    userIdFromEmail,
-    urlsForUser,
-    cookieHasUser
-  };
+  }
+  return userUrls;
+};
+
+module.exports = { getUserByEmail, generateRandomString, getUrlsForUser };
