@@ -151,7 +151,12 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  if (longURL.startsWith("http")){
+    res.redirect(`${longURL}`)
+    } else{
+    res.redirect(`http://${longURL}`);
+  }
+  
 });
 
 app.get("/urls/:shortURL", (req, res) => {
