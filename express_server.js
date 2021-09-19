@@ -20,10 +20,7 @@ app.use(
   })
 );
 
-const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
-};
+const urlDatabase = {};
 
 //users Database
 const users = {};
@@ -117,7 +114,6 @@ app.get("/urls", (req, res) => {
   }
 
   res.render("urls_index", templateVars);
-  console.log(urlDatabase);
 });
 
 //create a shortURL
@@ -131,30 +127,30 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
 app.post("/urls/:shortURL", (req, res) => {
   const templateVars = {
     user: users[req.session.username],
     shortURL: req.params.shortURL,
   };
+  console.log(req.body);
 
   if (urlDatabase[templateVars.shortURL].userID !== req.session.username) {
     return res.status(400).send("This URL does not belong to you!");
   }
 
-  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
   res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  if (longURL.startsWith("http")){
-    res.redirect(`${longURL}`)
+  const record = urlDatabase[req.params.shortURL];
+  if(record === undefined){
+  return res.status(404).send("page not found");
+  }
+  if (record.longURL.startsWith("http")){
+    res.redirect(`${record.longURL}`)
     } else{
-    res.redirect(`http://${longURL}`);
+    res.redirect(`http://${record.longURL}`);
   }
   
 });
@@ -177,7 +173,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
     res.render("urls_show", templateVars);
   } else {
-    res.sendStatus(404);
+    return res.status(404).send( "<h2>shorURL Not Found</h2>");
   }
 });
 
